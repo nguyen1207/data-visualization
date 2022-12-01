@@ -12,8 +12,27 @@ const homeController = {
       fs.readFileSync(path.resolve(__dirname, "../data/countries.json"))
     );
 
-    res.render("home.handlebars", {
-      countries: countries,
+    const response = await axios.get(DEATHS_UNTIL_NOW_URL);
+
+    const data = response.data;
+
+    parse(data, (err, records) => {
+      if (err) {
+        next(err);
+      }
+
+      const totalDeathsByCountry = {};
+
+      records.forEach((record) => {
+        const country = record[1];
+
+        totalDeathsByCountry[country] = record[record.length - 1];
+      });
+
+      res.render("home.handlebars", {
+        countries: countries,
+        totalDeathsByCountry: totalDeathsByCountry,
+      });
     });
   },
 
