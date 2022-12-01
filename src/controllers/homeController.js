@@ -4,7 +4,7 @@ const axios = require("axios");
 const { parse } = require("csv-parse");
 
 const DEATHS_UNTIL_NOW_URL =
-  "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv";
+  "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv";
 
 const homeController = {
   async home(req, res, next) {
@@ -24,14 +24,33 @@ const homeController = {
       const totalDeathsByCountry = {};
 
       records.forEach((record) => {
-        const country = record[1];
+        const countrySplit = record[1].split(", ");
+        let country;
+        if (countrySplit.length === 2) {
+          country = countrySplit[1] + " " + countrySplit[0];
+        } else country = countrySplit.join(" ").replace("*", "");
 
-        totalDeathsByCountry[country] = record[record.length - 1];
+        if (country === "Country/Region") return;
+
+        if (totalDeathsByCountry[country])
+          totalDeathsByCountry[country] += parseInt(
+            record[record.length - 1],
+            10
+          );
+        else
+          totalDeathsByCountry[country] = parseInt(
+            record[record.length - 1],
+            10
+          );
       });
 
+      console.log(totalDeathsByCountry);
+
       res.render("home.handlebars", {
-        countries: countries,
-        totalDeathsByCountry: totalDeathsByCountry,
+        data: {
+          countries: countries,
+          totalDeathsByCountry: totalDeathsByCountry,
+        },
       });
     });
   },

@@ -7,7 +7,16 @@ const app = express();
 const port = 3000;
 
 app.use(express.static("src/public"));
-app.engine("handlebars", engine());
+app.engine(
+  "handlebars",
+  engine({
+    helpers: {
+      json: function (content) {
+        return JSON.stringify(content);
+      },
+    },
+  })
+);
 app.set("view engine", "handlebars");
 app.set("views", "src/views");
 
