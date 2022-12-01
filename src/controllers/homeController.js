@@ -65,10 +65,66 @@ const homeController = {
       if (err) {
         next(err);
       }
+      const dateHeader = records[0].slice(4);
+      console.log(records[0].slice(4));
 
       const countryData = records.find((record) => record[1] === country);
 
-      res.send(countryData);
+      const data = [];
+
+      for (let i = 4; i < countryData.length; i++) {
+        data.push([dateHeader[i - 4], parseInt(countryData[i], 10)]);
+      }
+
+      const temp = [];
+
+      for (let i = 0; i < data.length; i++) {
+        const dateSplit = data[i][0].split("/");
+        const startMonth = parseInt(dateSplit[0], 10);
+        const startYear = parseInt(dateSplit[2], 10);
+
+        temp.push([`${startMonth}/${startYear}`, data[i][1]]);
+
+        let j = i + 1;
+        while (1) {
+          if (j >= data.length) break;
+          const dateSplit = data[j][0].split("/");
+          const endMonth = parseInt(dateSplit[0], 10);
+          const endYear = parseInt(dateSplit[2], 10);
+
+          if (startMonth == endMonth && startYear === endYear) {
+            temp[temp.length - 1][1] += data[j][1];
+            j++;
+          } else {
+            break;
+          }
+        }
+
+        i = j + 1;
+      }
+
+      const finalData = [];
+
+      for (let i = 0; i < temp.length; i += 3) {
+        const dateSplit = temp[i][0].split("/");
+        const month = parseInt(dateSplit[0], 10);
+        const year = parseInt(dateSplit[1], 10);
+
+        const q = "Q" + Math.ceil(month / 3);
+
+        let cases = 0;
+
+        for (let j = i; j < i + 3; j++) {
+          if (j >= temp.length) break;
+          cases += temp[j][1];
+        }
+
+        console.log(cases);
+
+        finalData.push([`${q} ${year}`, cases]);
+      }
+
+      res.render("deaths.handlebars", { data: finalData });
     });
   },
 };
