@@ -7,12 +7,14 @@ const DEATHS_UNTIL_NOW_URL =
   "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv";
 
 const homeController = {
-  async getCountries(req, res, next) {
+  async home(req, res, next) {
     const countries = JSON.parse(
       fs.readFileSync(path.resolve(__dirname, "../data/countries.json"))
     );
 
-    res.send(countries);
+    res.render("home.handlebars", {
+      countries: countries,
+    });
   },
 
   async getDeathsUntilNowByCountry(req, res, next) {

@@ -4,16 +4,16 @@
       id="select-country"
       class="form-select"
       aria-label="Default select example"
+      onclick=""
     >
       <option selected>Select country</option>
-      <option value="1">One</option>
-      <option value="2">Two</option>
-      <option value="3">Three</option>
+      {{#each countries}}
+        <option value="{{this}}">{{this}}</option>
+      {{/each}}
+      {{#each deaths}}{{/each}}
     </select>
-
   </div>
   <div id="regions_div" style="width: 900px; height: 500px;"></div>
 </body>
 
 <script src="js/demoGeoChart.js"></script>
-<script src="js/home.js" defer></script>
