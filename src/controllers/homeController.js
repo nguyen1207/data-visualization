@@ -76,6 +76,8 @@ const homeController = {
         data.push([dateHeader[i - 4], parseInt(countryData[i], 10)]);
       }
 
+      console.log(data);
+
       const temp = [];
 
       for (let i = 0; i < data.length; i++) {
@@ -93,7 +95,7 @@ const homeController = {
           const endYear = parseInt(dateSplit[2], 10);
 
           if (startMonth == endMonth && startYear === endYear) {
-            temp[temp.length - 1][1] += data[j][1];
+            temp[temp.length - 1][1] = data[j][1];
             j++;
           } else {
             break;
@@ -104,6 +106,8 @@ const homeController = {
       }
 
       const finalData = [];
+
+      console.log(temp);
 
       for (let i = 0; i < temp.length; i += 3) {
         const dateSplit = temp[i][0].split("/");
@@ -119,12 +123,12 @@ const homeController = {
           cases += temp[j][1];
         }
 
-        console.log(cases);
 
         finalData.push([`${q} ${year}`, cases]);
       }
+      console.log(finalData);
 
-      res.render("deaths.handlebars", { data: finalData });
+      res.render("deathsByCountry.handlebars", { data: finalData, country });
     });
   },
 };
