@@ -44,8 +44,6 @@ const homeController = {
           );
       });
 
-      console.log(totalDeathsByCountry);
-
       res.render("home.handlebars", {
         data: {
           countries: countries,
@@ -65,10 +63,25 @@ const homeController = {
       if (err) {
         next(err);
       }
-      const dateHeader = records[0].slice(4);
-      console.log(records[0].slice(4));
 
-      const countryData = records.find((record) => record[1] === country);
+      const dateHeader = records[0].slice(4);
+
+      let countryData = records.filter((record) => record[1] === country);
+
+      if (countryData.length === 1) {
+        countryData = countryData[0];
+      } else {
+        const temp = countryData[0];
+        for (let i = 0; i < countryData.length; i++) {
+          for (let j = 4; j < countryData[i].length; j++) {
+            temp[j] = parseInt(temp[j]) + parseInt(countryData[i][j]);
+          }
+        }
+
+        console.log(temp[temp.length - 1]);
+
+        countryData = temp;
+      }
 
       const data = [];
 
@@ -76,11 +89,9 @@ const homeController = {
         data.push([dateHeader[i - 4], parseInt(countryData[i], 10)]);
       }
 
-      console.log(data);
-
       const temp = [];
 
-      for (let i = 0; i < data.length; i++) {
+      for (let i = 0; i < data.length; ) {
         const dateSplit = data[i][0].split("/");
         const startMonth = parseInt(dateSplit[0], 10);
         const startYear = parseInt(dateSplit[2], 10);
@@ -102,12 +113,10 @@ const homeController = {
           }
         }
 
-        i = j + 1;
+        i = j;
       }
 
       const finalData = [];
-
-      console.log(temp);
 
       for (let i = 0; i < temp.length; i += 3) {
         const dateSplit = temp[i][0].split("/");
@@ -120,13 +129,11 @@ const homeController = {
 
         for (let j = i; j < i + 3; j++) {
           if (j >= temp.length) break;
-          cases += temp[j][1];
+          cases = temp[j][1];
         }
 
-
-        finalData.push([`${q} ${year}`, cases]);
+        finalData.push([`${q}-${year}`, cases]);
       }
-      console.log(finalData);
 
       res.render("deathsByCountry.handlebars", { data: finalData, country });
     });
